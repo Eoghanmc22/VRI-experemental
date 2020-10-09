@@ -35,7 +35,8 @@ public enum VanillaItems {
     ORANGE_GRAY_BED(() -> new BedItem(Material.ORANGE_BED, VanillaBlocks.ORANGE_BED)),
     BROWN_BED(() -> new BedItem(Material.BROWN_BED, VanillaBlocks.BROWN_BED)),
     LIME_BED(() -> new BedItem(Material.LIME_BED, VanillaBlocks.LIME_BED)),
-    FLINT_AND_STEEL(FlintAndSteel::new);
+    FLINT_AND_STEEL(FlintAndSteel::new),
+    WATER_BUCKET(WaterBucket::new);
 
     private final Supplier<VanillaItem> itemCreator;
 

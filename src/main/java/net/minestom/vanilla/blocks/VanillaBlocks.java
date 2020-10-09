@@ -78,7 +78,10 @@ public enum VanillaBlocks {
     CHEST(ChestBlock::new),
     TRAPPED_CHEST(TrappedChestBlock::new),
     ENDER_CHEST(EnderChestBlock::new),
-    JUKEBOX(JukeboxBlock::new);
+    JUKEBOX(JukeboxBlock::new),
+
+    WATER(WaterBlock::new),
+    SPONGE(SpongeBlock::new);
 
     private final VanillaBlockSupplier blockSupplier;
     private final BlockPlacementRule placementRule;
