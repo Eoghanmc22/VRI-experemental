@@ -1,4 +1,4 @@
-package net.minestom.vanilla.generation;
+package net.minestom.vanilla.generation.old;
 
 import lombok.Data;
 import net.minestom.server.world.biomes.Biome;

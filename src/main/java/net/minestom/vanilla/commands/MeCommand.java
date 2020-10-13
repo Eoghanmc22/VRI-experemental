@@ -29,7 +29,6 @@ public class MeCommand extends Command {
 	}
 
 	private void execute(CommandSender player, Arguments arguments) {
-			VanillaEntities.PIG.getEntityFunction().apply(player.asPlayer().getPosition().clone(),player.asPlayer().getInstance());
 		String[] messageParts = arguments.getStringArray("message");
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < messageParts.length; i++) {

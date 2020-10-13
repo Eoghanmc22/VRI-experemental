@@ -1,4 +1,4 @@
-package net.minestom.vanilla.generation;
+package net.minestom.vanilla.generation.old;
 
 import de.articdive.jnoise.JNoise;
 import net.minestom.server.MinecraftServer;
@@ -75,40 +75,29 @@ public class VanillaTestGenerator implements ChunkGenerator {
 				new VanillaBiomeData(Block.STONE.getBlockId(), (short) -1, 0.0, null)));
 	}
 
-	public static double square(double d) {
+	public static double square(final double d) {
 		return d * d;
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		final VanillaTestGenerator vanillaTestGenerator = new VanillaTestGenerator();
 		double min = Double.MAX_VALUE;
 		double culminatedHeight = 0;
 		double max = Double.MIN_VALUE;
-		int times = 1000000;
+		final int times = 1000000;
 		int l70 = 0;
 		int g200 = 0;
 		int g100 = 0;
 		int l100 = 0;
 		for (int i = 0; i < times; i++) {
-			double height = vanillaTestGenerator.calculateHeight(vanillaTestGenerator.random.nextInt(), vanillaTestGenerator.random.nextInt()) + 64;
+			final double height = vanillaTestGenerator.calculateHeight(vanillaTestGenerator.random.nextInt(), vanillaTestGenerator.random.nextInt()) + 64;
 			culminatedHeight += height;
-			if (height < min) {
-				min = height;
-			}
-			if (height > max) {
-				max = height;
-			}
-			if (height < 70) {
-				l70++;
-			}
-			if (height > 200) {
-				g200++;
-			}
-			if (height > 100) {
-				g100++;
-			} else {
-				l100++;
-			}
+			if (height < min) min = height;
+			if (height > max) max = height;
+			if (height < 70) l70++;
+			if (height > 200) g200++;
+			if (height > 100) g100++;
+			else l100++;
 		}
 		culminatedHeight /= times;
 		System.out.println(max);
@@ -121,46 +110,40 @@ public class VanillaTestGenerator implements ChunkGenerator {
 	}
 
 	@Override
-	public void generateChunkData(ChunkBatch batch, int chunkX, int chunkZ) {
+	public void generateChunkData(final ChunkBatch batch, final int chunkX, final int chunkZ) {
 
-		for (byte x = 0; x < Chunk.CHUNK_SIZE_X; x++) {
+		for (byte x = 0; x < Chunk.CHUNK_SIZE_X; x++)
 			for (byte z = 0; z < Chunk.CHUNK_SIZE_Z; z++) {
-				int posX = chunkX * 16 + x;
-				int posZ = chunkZ * 16 + z;
-				double heightDelta = calculateHeight(posX, posZ);
-				int height = (int) (64 + heightDelta);
+				final int posX = chunkX * 16 + x;
+				final int posZ = chunkZ * 16 + z;
+				final double heightDelta = calculateHeight(posX, posZ);
+				final int height = (int) (64 + heightDelta);
 
-				VanillaGenBiome biome = getBiome(posX, posZ);
+				final VanillaGenBiome biome = getBiome(posX, posZ);
 
 				batch.setBlock(x, 0, z, Block.BEDROCK);
-				for (int level = 1; level < height; level++) {
+				for (int level = 1; level < height; level++)
 					if (smoothRange(cavesMap.getNoise(posX / 16.0, level / 16.0, posZ / 16.0), -Math.max(level - (height - 10), 0), 0) < 0.5)
 						batch.setBlock(x, level, z, Block.STONE);
-				}
 				for (int level = height; level < 64; level++) {
 					//batch.setBlock(x, level, z, Block.WATER);
 				}
 				if (height > 64)
-					for (int level = height - 3; level < height; level++) {
-						batch.setBlock(x, level, z, Block.DIRT);
-					}
+					for (int level = height - 3; level < height; level++) batch.setBlock(x, level, z, Block.DIRT);
 
 				if (height >= 64) {
 					batch.setBlockStateId(x, height - 1, z, biome.getVanillaBiomeData().getTopBlock());
 					if (biome.getVanillaBiomeData().getOverlayBlock() != -1)
 						batch.setBlockStateId(x, height, z, biome.getVanillaBiomeData().getOverlayBlock());
-					if (random.nextDouble() < 0.3) {
+					if (random.nextDouble() < 0.3)
 						batch.setBlockStateId(x, height, z, biome.getVanillaBiomeData().getDecorationBlocks().getShort(random.nextInt(biome.getVanillaBiomeData().getDecorationBlocks().size())));
-					}
-					if (random.nextDouble() < biome.getVanillaBiomeData().getTreeChance()) {
+					if (random.nextDouble() < biome.getVanillaBiomeData().getTreeChance())
 						spawnTree(batch, x, height, z, Block.OAK_LOG, Block.OAK_LEAVES);
-					}
 				}
 			}
-		}
 	}
 
-	public double calculateHeight(int posX, int posZ) {
+	public double calculateHeight(final int posX, final int posZ) {
 		return smoothRange(smoothRange(heightMap1.getNoise(posX / 16.0, posZ / 16.0) * 16, 1, -5) * 0.75 +
 				smoothRange(heightMap2.getNoise(posX / 16.0, posZ / 16.0) * 16, 0, -6) * 0.5 +
 				smoothRange(heightMap3.getNoise(posX / 16.0, posZ / 16.0) * 16, 0, 1) * 0.3 +
@@ -170,53 +153,47 @@ public class VanillaTestGenerator implements ChunkGenerator {
 				(smoothRange(square(heightMap7.getNoise(posX / 16.0, posZ / 16.0) * 16), 10, -10) - 15) * 0.3, 0, -1);
 	}
 
-	public double smoothRange(double value, double top, double bottom) {
+	public double smoothRange(final double value, final double top, final double bottom) {
 		return value >= 0 ? (value + top * (value / 6)) : value - bottom * (-value / 6);
 	}
 
 	@Override
-	public void fillBiomes(Biome[] biomes, int chunkX, int chunkZ) {
-		Biome[] tempBiomes = new Biome[16];
-		int biomeSize = 4;
-		for (int i = 0; i < biomeSize; i++) {
-			for (int j = 0; j < biomeSize; j++) {
+	public void fillBiomes(final Biome[] biomes, final int chunkX, final int chunkZ) {
+		final Biome[] tempBiomes = new Biome[16];
+		final int biomeSize = 4;
+		for (int i = 0; i < biomeSize; i++)
+			for (int j = 0; j < biomeSize; j++)
 				tempBiomes[i * 4 + j] = getBiome(chunkX * 16 + j, chunkZ * 16 + i).getBiome();
-			}
-		}
-		int temp = (int) square((double) Chunk.CHUNK_SIZE_X / biomeSize);
-		for (int i = 0; i < biomes.length; i++) {
-			biomes[i] = tempBiomes[i % temp];
-		}
+		final int temp = (int) square((double) Chunk.CHUNK_SIZE_X / biomeSize);
+		for (int i = 0; i < biomes.length; i++) biomes[i] = tempBiomes[i % temp];
 	}
 
-	public double getHeight(int x, int z) {
+	public double getHeight(final int x, final int z) {
 		return Math.max(-1, Math.min(calculateHeight(x, z) / 32, 1));
 	}
 
-	public double getTemperature(int x, int z) {
+	public double getTemperature(final int x, final int z) {
 		double temperature = temperatureMap.getNoise(x, z);
 		temperature -= getHeight(x, z) * 0.05;
 		return temperature;
 	}
 
-	public double getHumidity(int x, int z) {
+	public double getHumidity(final int x, final int z) {
 		double humidity = humidityMap.getNoise(x, z);
 		if (getHeight(x, z) < 0)
 			humidity = 2;
-		else {
-			humidity = getHeight(x, z) / 2 + humidity / 2;
-		}
+		else humidity = getHeight(x, z) / 2 + humidity / 2;
 		return humidity;
 	}
 
-	public VanillaGenBiome getBiome(int x, int z) {
-		double height = getHeight(x, z);
-		double temperature = getTemperature(x, z);
-		double humidity = getHumidity(x, z);
+	public VanillaGenBiome getBiome(final int x, final int z) {
+		final double height = getHeight(x, z);
+		final double temperature = getTemperature(x, z);
+		final double humidity = getHumidity(x, z);
 		double distance = Double.MAX_VALUE;
 		VanillaGenBiome biome = null;
 		for (final VanillaGenBiome biomeT : biomes) {
-			double tempDistance = square(biomeT.getTemperature() - temperature) + square(biomeT.getHumidity() - humidity) + square(biomeT.getHeight() - height);
+			final double tempDistance = square(biomeT.getTemperature() - temperature) + square(biomeT.getHumidity() - humidity) + square(biomeT.getHeight() - height);
 			if (distance > tempDistance) {
 				distance = tempDistance;
 				biome = biomeT;
@@ -225,15 +202,11 @@ public class VanillaTestGenerator implements ChunkGenerator {
 		return biome;
 	}
 
-	private void spawnTree(ChunkBatch batch, int trunkX, int trunkBottomY, int trunkZ, Block log, Block leaves) {
+	private void spawnTree(final ChunkBatch batch, final int trunkX, final int trunkBottomY, final int trunkZ, final Block log, final Block leaves) {
 
-		for (int i = 0; i < 2; i++) {
-			for (int x = -2; x <= 2; x++) {
-				for (int z = -2; z <= 2; z++) {
-					batch.setBlock(trunkX + x, trunkBottomY + 2 + i, trunkZ - z, leaves);
-				}
-			}
-		}
+		for (int i = 0; i < 2; i++)
+			for (int x = -2; x <= 2; x++)
+				for (int z = -2; z <= 2; z++) batch.setBlock(trunkX + x, trunkBottomY + 2 + i, trunkZ - z, leaves);
 		for (int i = 0; i < 3; i++) {
 			batch.setBlock(trunkX + 1, trunkBottomY + 3 + i, trunkZ, leaves);
 			batch.setBlock(trunkX - 1, trunkBottomY + 3 + i, trunkZ, leaves);

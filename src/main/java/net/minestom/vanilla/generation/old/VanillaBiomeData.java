@@ -1,4 +1,4 @@
-package net.minestom.vanilla.generation;
+package net.minestom.vanilla.generation.old;
 
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ public class VanillaBiomeData {
 	double treeChance;
 	ShortArrayList decorationBlocks;
 
-	public static ShortArrayList fromShorts(short... shorts) {
+	public static ShortArrayList fromShorts(final short... shorts) {
 		return new ShortArrayList(shorts);
 	}
 }
