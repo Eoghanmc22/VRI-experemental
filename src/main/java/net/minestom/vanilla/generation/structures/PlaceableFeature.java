@@ -10,6 +10,6 @@ public interface PlaceableFeature {
 
 	void place(ChunkBatch batch, BlockPosition bpos, VanillaBiome biome, Random r);
 
-	float chance();
+	float chance(VanillaBiome biome);
 
 }

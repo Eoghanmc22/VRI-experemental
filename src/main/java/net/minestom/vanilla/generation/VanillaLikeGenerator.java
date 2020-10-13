@@ -52,7 +52,7 @@ public class VanillaLikeGenerator implements SimpleChunkGenerator {
 						final int heightPre = shouldSmooth ? getAverageHeight(chunkX * 16 + x, chunkZ * 16 + z) : biome.getGenerator().getHeight(chunkX * 16 + x, chunkZ * 16 + z);
 						final int height = biome.getGenerator().generate(batch, x, z, heightPre, random);
 						for (final PlaceableFeature feature : biome.getFeatures())
-							if (feature.chance() <= random.nextFloat())
+							if (feature.chance(biome) >= random.nextFloat())
 								feature.place(batch, new BlockPosition(x, height + 1, z), biome, random);
 					}
 	}
