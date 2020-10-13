@@ -17,7 +17,9 @@ import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.*;
 import net.minestom.server.extras.MojangAuth;
+import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.ExplosionSupplier;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
@@ -187,12 +189,14 @@ public class PlayerInit {
             sidebar.createLine(new Sidebar.ScoreboardLine("id2", ColoredText.of(""), 2));
             sidebar.createLine(new Sidebar.ScoreboardLine("id3", ColoredText.of(""), 3));
             sidebar.createLine(new Sidebar.ScoreboardLine("id4", ColoredText.of(""), 4));
+            sidebar.createLine(new Sidebar.ScoreboardLine("id5", ColoredText.of(""), 5));
             player.addEventCallback(PlayerMoveEvent.class, event -> {
                 final BlockPosition pos = event.getPlayer().getPosition().toBlockPosition();
                 sidebar.updateLineContent("id1", ColoredText.of("weirdness: " + round(noiseTestGenerator.getWeirdness(pos.getX(), pos.getZ()))));
                 sidebar.updateLineContent("id2", ColoredText.of("temperature: " + round(noiseTestGenerator.getTemperature(pos.getX(), pos.getZ()))));
                 sidebar.updateLineContent("id3", ColoredText.of("humidity: " + round(noiseTestGenerator.getHumidity(pos.getX(), pos.getZ()))));
                 sidebar.updateLineContent("id4", ColoredText.of("biome: " + noiseTestGenerator.getBiome(pos.getX(), pos.getZ()).getBiome().getName()));
+                sidebar.updateLineContent("id5", ColoredText.of("smooth?: " + noiseTestGenerator.shouldSmooth(pos.getX(), pos.getZ())));
             });
 
             player.addEventCallback(PlayerSpawnEvent.class, event -> {
@@ -219,6 +223,19 @@ public class PlayerInit {
                 itemEntity.setInstance(player.getInstance());
                 final Vector velocity = player.getPosition().clone().getDirection().multiply(6);
                 itemEntity.setVelocity(velocity);
+            });
+
+            //Water puts out fire
+            player.addEventCallback(PlayerChunkUnloadEvent.class, event -> {
+                final Instance instance = player.getInstance();
+
+                final Chunk chunk = instance.getChunk(event.getChunkX(), event.getChunkZ());
+
+                if (chunk == null)
+                    return;
+
+                // Unload the chunk (save memory) if it has no remaining viewer
+                if (chunk.getViewers().isEmpty()) player.getInstance().unloadChunk(chunk);
             });
 
             //Water puts out fire

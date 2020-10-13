@@ -5,7 +5,8 @@ import net.minestom.vanilla.generation.VanillaLikeGenerator;
 
 @Getter
 public enum VanillaBiomes {
-	PLAINS(new PlainsBiome());
+	PLAINS(new PlainsBiome()),
+	DESERT(new DesertBiome());
 
 	final VanillaBiome biome;
 
